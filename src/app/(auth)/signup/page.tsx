@@ -15,6 +15,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const inputFeildsData = [
   {
@@ -52,6 +53,7 @@ export default function Signup() {
   });
   const [loading, setLoading] = useState<boolean>(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -86,16 +88,23 @@ export default function Signup() {
       // Simulate API call
       const backendUrl:
         | string
-        | undefined = `${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/user/signup`;
+        | undefined = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user/signup`;
       if (!backendUrl) {
         throw new Error("NEXT_PUBLIC_BACKEND_URL is not defined");
       }
       const res = await axios.post(backendUrl, formData);
       if (res.status === 200) {
-        // Success: Show success toast
+        // Success: Show success
+        const data = res.data;
+        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("firstName", data.firstName);
+        localStorage.setItem("lastName", data.lastName);
+        localStorage.setItem("token", `Bearer ${data.token}`);
         toast.success("Signed up successfully! 🎉", {
           duration: 2000, // in milliseconds
         });
+        router.push("/dashboard");
         // You can redirect or clear form here
         setFormData({
           firstName: "",
@@ -106,10 +115,17 @@ export default function Signup() {
         setLoading(false);
       }
     } catch (err: any) {
+      if (err.status === 409) {
+        toast.error("Email already registered", {
+          duration: 2000,
+        });
+      } else {
+        toast.error("Internal server error. Please try again later.", {
+          duration: 2000,
+        });
+      }
       // Error: Show error toast
-      toast.error("Internal server error. Please try again later.", {
-        duration: 2000,
-      });
+
       setLoading(false);
       console.error("Signup error:", err.response?.data || err.message);
     }

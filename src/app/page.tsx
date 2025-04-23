@@ -1,11 +1,20 @@
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+"use client";
 
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      router.push("/dashboard");
+    }
+  }, [router]);
+
   return (
     <div className="">
-      <span className="">Hello</span>
-      <Button>Hello1</Button>
+      <div>Hello</div>
     </div>
   );
 }

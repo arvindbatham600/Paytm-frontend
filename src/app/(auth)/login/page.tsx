@@ -15,6 +15,8 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { cookies } from "next/headers";
 
 const inputFields = [
   {
@@ -39,6 +41,7 @@ export default function Login() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -72,13 +75,23 @@ export default function Login() {
       setLoading(true);
       const backendUrl:
         | string
-        | undefined = `${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/user/signin`;
+        | undefined = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user/signin`;
+
       if (!backendUrl) {
         throw new Error("NEXT_PUBLIC_BACKEND_URL is not defined");
       }
       const res = await axios.post(backendUrl, formData);
       if (res.status === 200) {
+        const data = res.data;
+        localStorage.setItem("userId", data.userId);
+        localStorage.setItem("email", data.email);
+        localStorage.setItem("firstName", data.firstName);
+        localStorage.setItem("lastName", data.lastName);
+        localStorage.setItem("token", `Bearer ${data.token}`);
+        (await cookies()).set("token", `Bearer ${data.token}`);
         toast.success("Logged in successfully 🎉", { duration: 2000 });
+
+        router.push("/dashboard");
 
         // Reset form or redirect as needed
         setFormData({ email: "", password: "" });
