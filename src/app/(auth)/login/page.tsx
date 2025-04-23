@@ -70,18 +70,22 @@ export default function Login() {
 
     try {
       setLoading(true);
-      const res = await axios.post(
-        "http://localhost:3000/api/v1/login",
-        formData
-      );
+      const backendUrl:
+        | string
+        | undefined = `${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/user/signin`;
+      if (!backendUrl) {
+        throw new Error("NEXT_PUBLIC_BACKEND_URL is not defined");
+      }
+      const res = await axios.post(backendUrl, formData);
+      if (res.status === 200) {
+        toast.success("Logged in successfully 🎉", { duration: 2000 });
 
-      toast.success("Logged in successfully 🎉", { duration: 2000 });
-
-      // Reset form or redirect as needed
-      setFormData({ email: "", password: "" });
-      setLoading(false);
+        // Reset form or redirect as needed
+        setFormData({ email: "", password: "" });
+        setLoading(false);
+      }
     } catch (error: any) {
-      toast.error("Login failed. Please try again.", { duration: 2000 });
+      toast.error("Invalid Credentials  ", { duration: 2000 });
       console.error("Login error:", error.response?.data || error.message);
       setLoading(false);
     }
@@ -119,7 +123,7 @@ export default function Login() {
           <CardFooter className="flex-col gap-1">
             <Button
               disabled={loading}
-              className="w-full"
+              className="w-full cursor-pointer"
               onClick={handleSubmit}
             >
               {loading ? "Logging in..." : "Login"}

@@ -84,23 +84,27 @@ export default function Signup() {
     try {
       setLoading(true);
       // Simulate API call
-      const res = await axios.post(
-        "http://localhost:3000/api/v1/signup",
-        formData
-      );
-
-      // Success: Show success toast
-      toast.success("Signed up successfully! 🎉", {
-        duration: 2000, // in milliseconds
-      });
-      // You can redirect or clear form here
-      setFormData({
-        firstName: "",
-        lastName: "",
-        email: "",
-        password: "",
-      });
-      setLoading(false);
+      const backendUrl:
+        | string
+        | undefined = `${process.env.NEXT_PUBLIC_BACKEND_URL}api/v1/user/signup`;
+      if (!backendUrl) {
+        throw new Error("NEXT_PUBLIC_BACKEND_URL is not defined");
+      }
+      const res = await axios.post(backendUrl, formData);
+      if (res.status === 200) {
+        // Success: Show success toast
+        toast.success("Signed up successfully! 🎉", {
+          duration: 2000, // in milliseconds
+        });
+        // You can redirect or clear form here
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          password: "",
+        });
+        setLoading(false);
+      }
     } catch (err: any) {
       // Error: Show error toast
       toast.error("Internal server error. Please try again later.", {
@@ -146,7 +150,7 @@ export default function Signup() {
             <CardFooter className="flex-col gap-1">
               <Button
                 disabled={loading ? true : false}
-                className="w-[100%]"
+                className="w-[100%] cursor-pointer"
                 onClick={handleSubmit}
               >
                 {loading ? "Signing up..." : "Sign Up"}
