@@ -7,13 +7,11 @@ import { toast } from "react-hot-toast";
 
 const Details = () => {
   const [balance, setBalance] = useState<string | number>("");
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const tokenVaue = localStorage.getItem("token");
     if (tokenVaue) {
-      setToken(tokenVaue);
       fetchUserBalance(tokenVaue);
     }
   }, []);
@@ -33,12 +31,21 @@ const Details = () => {
       if (res.status === 200) {
         const data = res.data;
         setBalance(Math.floor(data?.balance * 100) / 100);
+        localStorage.setItem("currentBalance", data?.balance);
         setTimeout(() => setLoading(false), 1000);
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.status === 403) {
+        toast.error("Not Authorized", {
+          duration: 2000,
+        });
+      } else {
+        toast.error("Failed to load balance", {
+          duration: 2000,
+        });
+      }
       console.error("Failed to fetch balance:", error);
       // Optionally show toast or set error state
-      toast.error("Failed to load balance");
       setLoading(false);
     }
   };
