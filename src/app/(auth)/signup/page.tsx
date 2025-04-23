@@ -101,6 +101,9 @@ export default function Signup() {
         localStorage.setItem("firstName", data.firstName);
         localStorage.setItem("lastName", data.lastName);
         localStorage.setItem("token", `Bearer ${data.token}`);
+        document.cookie = `token=Bearer ${data.token}; path=/; max-age=${
+          60 * 60 * 24
+        };`;
         toast.success("Signed up successfully! 🎉", {
           duration: 2000, // in milliseconds
         });

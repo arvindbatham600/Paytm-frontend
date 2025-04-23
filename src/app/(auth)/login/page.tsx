@@ -88,7 +88,10 @@ export default function Login() {
         localStorage.setItem("firstName", data.firstName);
         localStorage.setItem("lastName", data.lastName);
         localStorage.setItem("token", `Bearer ${data.token}`);
-        (await cookies()).set("token", `Bearer ${data.token}`);
+        // ✅ Set token as a cookie (client-side)
+        document.cookie = `token=Bearer ${data.token}; path=/; max-age=${
+          60 * 60 * 24
+        };`;
         toast.success("Logged in successfully 🎉", { duration: 2000 });
 
         router.push("/dashboard");
