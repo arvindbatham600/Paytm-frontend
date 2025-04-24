@@ -22,7 +22,7 @@ const UserDetails = () => {
   const router = useRouter();
 
   const fetchUsersInformation = async (tokenValue: string, search: string) => {
-    console.log("toekenValue", tokenValue);
+    // console.log("toekenValue", tokenValue);
     try {
       setLoading(true);
       const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/user/bulk?filter=${search}`;

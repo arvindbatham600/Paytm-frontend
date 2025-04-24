@@ -31,6 +31,13 @@ const SendMoney = () => {
         amount: sendingAmount,
         to: toId,
       };
+      const sendingAmountNum = Number(sendingAmount);
+      const currentAmountNum = Number(currentAmount);
+      if (sendingAmountNum > currentAmountNum) {
+        toast.error("Insufficient balance");
+        setLoading(false);
+        return;
+      }
 
       const res = await axios.post(backendUrl, payload, {
         headers: {
@@ -40,6 +47,8 @@ const SendMoney = () => {
 
       if (res.status === 200) {
         toast.success("Transaction Successful! 🎉 ");
+        setSendingAmount("");
+        setTimeout(() => setLoading(false), 1000);
       }
     } catch (error: any) {
       if (error.status === 403) {
@@ -101,7 +110,7 @@ const SendMoney = () => {
                 disabled={!sendingAmount || loading ? true : false}
                 className="bg-green-500 w-full hover:bg-green-400 cursor-pointer"
               >
-                Initiate Transfer
+                {loading ? "Initiating Transfer..." : "Initiate Transfer"}
               </Button>
             </CardFooter>
           </Card>

@@ -17,7 +17,7 @@ const Details = () => {
   }, []);
 
   const fetchUserBalance = async (tokenValue: string) => {
-    console.log("toekenValue", tokenValue);
+    // console.log("toekenValue", tokenValue);
     try {
       setLoading(true);
       const backendUrl = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/account/balance`;
