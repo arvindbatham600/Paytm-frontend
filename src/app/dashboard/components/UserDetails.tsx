@@ -107,7 +107,8 @@ const UserDetails = () => {
                 <Button
                   onClick={() => {
                     localStorage.setItem("to", user.firstName);
-                    router.push(`/sendmoney?userId=${user.userId}`);
+                    localStorage.setItem("toId", user.userId);
+                    router.push(`/sendmoney`);
                   }}
                   className="cursor-pointer"
                 >

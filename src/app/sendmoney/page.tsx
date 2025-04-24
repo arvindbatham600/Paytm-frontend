@@ -9,13 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const SendMoney = () => {
-  const searchParams = useSearchParams();
-  const toId = searchParams.get("userId");
+  const [toId, setToId] = useState<string>("");
   const [token, setToken] = useState<string | number>("");
   const [currentAmount, setCurrentAmount] = useState<string | number>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -82,6 +80,7 @@ const SendMoney = () => {
     const tokenVaue = localStorage.getItem("token");
     const amount = localStorage.getItem("currentBalance");
     const name = localStorage.getItem("to");
+    const tosendId = localStorage.getItem("toId");
     if (tokenVaue) {
       setToken(tokenVaue);
     }
@@ -90,6 +89,9 @@ const SendMoney = () => {
     }
     if (name) {
       setToName(name);
+    }
+    if (tosendId) {
+      setToId(tosendId);
     }
   }, []);
 
