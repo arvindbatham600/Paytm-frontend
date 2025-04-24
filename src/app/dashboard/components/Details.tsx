@@ -34,19 +34,32 @@ const Details = () => {
         localStorage.setItem("currentBalance", data?.balance);
         setTimeout(() => setLoading(false), 1000);
       }
-    } catch (error: any) {
-      if (error.status === 403) {
-        toast.error("Not Authorized", {
-          duration: 2000,
-        });
-      } else {
-        toast.error("Failed to load balance", {
-          duration: 2000,
-        });
-      }
-      console.error("Failed to fetch balance:", error);
-      // Optionally show toast or set error state
+    } catch (error: unknown) {
       setLoading(false);
+
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+
+        if (status === 403) {
+          toast.error("Not Authorized", {
+            duration: 2000,
+          });
+        } else {
+          toast.error("Failed to load balance", {
+            duration: 2000,
+          });
+        }
+
+        console.error(
+          "Failed to fetch balance:",
+          error.response?.data || error.message
+        );
+      } else {
+        toast.error("Unexpected error occurred while fetching balance", {
+          duration: 2000,
+        });
+        console.error("Unknown error while fetching balance:", error);
+      }
     }
   };
 

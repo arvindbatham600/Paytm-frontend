@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -50,19 +49,32 @@ const SendMoney = () => {
         setSendingAmount("");
         setTimeout(() => setLoading(false), 1000);
       }
-    } catch (error: any) {
-      if (error.status === 403) {
-        toast.error("Not Authorized", {
-          duration: 2000,
-        });
-      } else {
-        toast.error("Transaction faild, Please try again later", {
-          duration: 2000,
-        });
-      }
-      console.error("Failed to fetch balance:", error);
-      // Optionally show toast or set error state
+    } catch (error: unknown) {
       setLoading(false);
+
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+
+        if (status === 403) {
+          toast.error("Not Authorized", {
+            duration: 2000,
+          });
+        } else {
+          toast.error("Transaction failed, please try again later", {
+            duration: 2000,
+          });
+        }
+
+        console.error(
+          "Transaction error:",
+          error.response?.data || error.message
+        );
+      } else {
+        toast.error("Unexpected error occurred during the transaction", {
+          duration: 2000,
+        });
+        console.error("Unknown transaction error:", error);
+      }
     }
   };
 

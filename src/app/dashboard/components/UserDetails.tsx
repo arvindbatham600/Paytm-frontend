@@ -2,7 +2,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -38,19 +37,31 @@ const UserDetails = () => {
         setUsers(data.user);
         setTimeout(() => setLoading(false), 1000);
       }
-    } catch (error: any) {
-      if (error.status === 403) {
-        toast.error("Not Authorized", {
-          duration: 2000,
-        });
-      } else {
-        toast.error("Failed to get users details", {
-          duration: 2000,
-        });
-      }
-      console.error("Failed to fetch balance:", error);
-      // Optionally show toast or set error state
+    } catch (error: unknown) {
       setLoading(false);
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+
+        if (status === 403) {
+          toast.error("Not Authorized", {
+            duration: 2000,
+          });
+        } else {
+          toast.error("Failed to get user details", {
+            duration: 2000,
+          });
+        }
+
+        console.error(
+          "Failed to fetch user details:",
+          error.response?.data || error.message
+        );
+      } else {
+        toast.error("Unexpected error occurred while fetching user details", {
+          duration: 2000,
+        });
+        console.error("Unknown error while fetching user details:", error);
+      }
     }
   };
 

@@ -117,20 +117,29 @@ export default function Signup() {
         });
         setLoading(false);
       }
-    } catch (err: any) {
-      if (err.status === 409) {
-        toast.error("Email already registered", {
-          duration: 2000,
-        });
-      } else {
-        toast.error("Internal server error. Please try again later.", {
-          duration: 2000,
-        });
-      }
-      // Error: Show error toast
-
+    } catch (error: unknown) {
       setLoading(false);
-      console.error("Signup error:", err.response?.data || err.message);
+
+      if (axios.isAxiosError(error)) {
+        const status = error.response?.status;
+
+        if (status === 409) {
+          toast.error("Email already registered", {
+            duration: 2000,
+          });
+        } else {
+          toast.error("Internal server error. Please try again later.", {
+            duration: 2000,
+          });
+        }
+
+        console.error("Signup error:", error.response?.data || error.message);
+      } else {
+        toast.error("Unexpected error occurred.", {
+          duration: 2000,
+        });
+        console.error("Unknown error during signup:", error);
+      }
     }
   };
 

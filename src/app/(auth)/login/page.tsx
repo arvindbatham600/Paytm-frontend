@@ -16,7 +16,6 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { cookies } from "next/headers";
 
 const inputFields = [
   {
@@ -100,9 +99,14 @@ export default function Login() {
         setFormData({ email: "", password: "" });
         setLoading(false);
       }
-    } catch (error: any) {
-      toast.error("Invalid Credentials  ", { duration: 2000 });
-      console.error("Login error:", error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error("Invalid Credentials", { duration: 2000 });
+        console.error("Login error:", error.response?.data || error.message);
+      } else {
+        toast.error("Something went wrong", { duration: 2000 });
+        console.error("Unexpected error:", error);
+      }
       setLoading(false);
     }
   };
@@ -145,7 +149,7 @@ export default function Login() {
               {loading ? "Logging in..." : "Login"}
             </Button>
             <div className="text-center font-light text-sm">
-              Don't have an account?{" "}
+              {`Don't have an account? `}
               <Link href="/signup" className="text-blue-600 underline">
                 Sign Up
               </Link>
